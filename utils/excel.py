@@ -25,8 +25,8 @@ def writeExcel(dictionary):
   df.rename(columns={'codigo': 'CÓDIGO'}, inplace=True)
   df.rename(columns={'discriminacao': 'DISCRIMINAÇÃO'}, inplace=True)
   df.rename(columns={'vantagens': 'VANTAGENS'}, inplace=True)
-  df.rename(columns={'compet': 'COMPET'}, inplace=True)
+  df.rename(columns={'margem_consignavel': 'MARGEM CONSIGNÁVEL'}, inplace=True)
   
-  # writer = pd.ExcelWriter('test.xlsx', engine='xlsxwriter')
-  # df.to_excel(writer, sheet_name='planilhafinal')
+  print(df)
+  
   df.to_excel('planilhas/planilhafinal.xlsx', index=False) 
