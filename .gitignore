@@ -1,0 +1,5 @@
+planilhas/entrada/*
+planilhas/saida/*
+
+!planilhas/entrada/.gitkeep
+!planilhas/saida/.gitkeep
