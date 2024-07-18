@@ -1,18 +1,23 @@
 import pandas as pd
+from os import listdir
+from datetime import datetime, UTC
+
+def findExcel():
+  return listdir("planilhas/entrada")
 
 def readExcel(name):
-	df = pd.read_excel(f'planilhas/{name}.xlsx')
-
-	df.rename(columns={'Matrícula(com o dígito)': 'matricula'}, inplace=True)
-	df.rename(columns={'Vínculo': 'vinculo'}, inplace=True)
-	df.rename(columns={'CPF(do(a) Pensionista)': 'cpf'}, inplace=True)
-	df.rename(columns={'N.º Pensionista': 'numpens'}, inplace=True)
-	df.rename(columns={'Mês': 'mes'}, inplace=True)
-	df.rename(columns={'ano': 'ano'}, inplace=True)
+  df = pd.read_excel(f'planilhas/entrada/{name}')
   
-	return df
+  df.rename(columns={'Matrícula(com o dígito)': 'matricula'}, inplace=True)
+  df.rename(columns={'Vínculo': 'vinculo'}, inplace=True)
+  df.rename(columns={'CPF(do(a) Pensionista)': 'cpf'}, inplace=True)
+  df.rename(columns={'N.º Pensionista': 'numpens'}, inplace=True)
+  df.rename(columns={'Mês': 'mes'}, inplace=True)
+  df.rename(columns={'ano': 'ano'}, inplace=True)
+  
+  return df
 
-def writeExcel(dictionary):
+def writeExcel(dictionary, name):
   df = pd.DataFrame(dictionary)
   
   df.rename(columns={'nome': 'NOME'}, inplace=True)
@@ -27,6 +32,6 @@ def writeExcel(dictionary):
   df.rename(columns={'vantagens': 'VANTAGENS'}, inplace=True)
   df.rename(columns={'margem_consignavel': 'MARGEM CONSIGNÁVEL'}, inplace=True)
   
-  print(df)
+  time_now = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
   
-  df.to_excel('planilhas/planilhafinal.xlsx', index=False) 
+  df.to_excel(f'planilhas/saida/{time_now}_format_{name}', index=False)
