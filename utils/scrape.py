@@ -34,7 +34,7 @@ def scrape(df, name):
 		box_vinculo.send_keys(str(df['vinculo'][i]))
 		box_cpf.send_keys(str(df['cpf'][i]))
 		box_numpens.send_keys(str(df['numpens'][i]))
-		box_mes_choice = driver.find_element(By.XPATH, f'/html/body/div[1]/div[2]/div/div/div[2]/form/div[5]/select/option[{convertMonth(df['mes'][i])}]')
+		box_mes_choice = driver.find_element(By.XPATH, f"/html/body/div[1]/div[2]/div/div/div[2]/form/div[5]/select/option[{convertMonth(df['mes'][i])}]")
 		box_mes_choice.click()
 		box_ano.send_keys(str(df['ano'][i]))
 		

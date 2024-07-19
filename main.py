@@ -62,11 +62,11 @@ def main():
 						found_duplicate = detectDuplicateExcel(try_find_excel[choice - 1])
 			
 						if found_duplicate["detected"] == True:
-							print(f"\nOps, a planilha '{found_duplicate["in"]}' foi encontrada já extraída ou com o mesmo nome:")
+							print(f"\nOps, a planilha '{found_duplicate['in']}' foi encontrada já extraída ou com o mesmo nome:")
 							print(f"* {found_duplicate['in']} => {found_duplicate['out']}")
 			 
 							while True:
-								print(f"\nDeseja adicionar '{found_duplicate["in"]}' mesmo assim? (s/n):", end=" ")
+								print(f"\nDeseja adicionar '{found_duplicate['in']}' mesmo assim? (s/n):", end=" ")
 								override_choice = input()
 								if override_choice.lower() == 's':
 									all_excel.append(try_find_excel[choice - 1])
