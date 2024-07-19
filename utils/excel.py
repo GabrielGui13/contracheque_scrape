@@ -1,12 +1,19 @@
 import pandas as pd
-from os import listdir
+from os import listdir, chdir
 from datetime import datetime, UTC
 
 def findExcel():
-  return listdir("planilhas/entrada")
+  files = listdir("./planilhas/entrada")
+  filtered_files = []
+  
+  for i in files:
+    if i.endswith('.xlsx'):
+      filtered_files.append(i)  
+  
+  return filtered_files
 
 def readExcel(name):
-  df = pd.read_excel(f'planilhas/entrada/{name}')
+  df = pd.read_excel(f'./planilhas/entrada/{name}')
   
   df.rename(columns={'Matrícula(com o dígito)': 'matricula'}, inplace=True)
   df.rename(columns={'Vínculo': 'vinculo'}, inplace=True)
@@ -34,4 +41,4 @@ def writeExcel(dictionary, name):
   
   time_now = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
   
-  df.to_excel(f'planilhas/saida/{time_now}_format_{name}', index=False)
+  df.to_excel(f'./planilhas/saida/{time_now}_format_{name}', index=False)

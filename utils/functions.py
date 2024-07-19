@@ -1,3 +1,5 @@
+from os import listdir
+
 def convertMonth(month):
   monthDictionary = {
 		"janeiro": 1,
@@ -15,3 +17,6 @@ def convertMonth(month):
 	}
   
   return monthDictionary[month]
+
+def checkEntryExcel():
+  sheet_count = listdir()

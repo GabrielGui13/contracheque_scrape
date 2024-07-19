@@ -8,7 +8,7 @@ from time import time
 from utils.functions import convertMonth
 from utils.excel import readExcel, writeExcel
 
-def scrape(df):	
+def scrape(df, name):	
 	driver:WebDriver = webdriver.Chrome()
 	driver.maximize_window()
 	initial_time = time()
@@ -110,7 +110,7 @@ def scrape(df):
 
 		pessoas.append(pessoa)
 
-	print("Tempo de execução:", f'{time() - initial_time:.2f} segundos')
+	print(f"Tempo de execução ({name}):", f'{time() - initial_time:.2f} segundos')
 
 	driver.quit()
 	
