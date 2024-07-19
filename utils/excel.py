@@ -2,8 +2,8 @@ import pandas as pd
 from os import listdir, chdir
 from datetime import datetime, UTC
 
-def findExcel():
-  files = listdir("./planilhas/entrada")
+def findExcel(io):
+  files = listdir(f"./planilhas/{io}")
   filtered_files = []
   
   for i in files:
@@ -40,5 +40,9 @@ def writeExcel(dictionary, name):
   df.rename(columns={'margem_consignavel': 'MARGEM CONSIGNÁVEL'}, inplace=True)
   
   time_now = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+
+  excel_name = f'./planilhas/saida/{time_now}_format_{name}'
+    
+  df.to_excel(excel_name, index=False)
   
-  df.to_excel(f'./planilhas/saida/{time_now}_format_{name}', index=False)
+  return excel_name

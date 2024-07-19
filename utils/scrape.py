@@ -9,8 +9,12 @@ from utils.functions import convertMonth
 from utils.excel import readExcel, writeExcel
 
 def scrape(df, name):	
-	driver:WebDriver = webdriver.Chrome()
+	options = webdriver.ChromeOptions()
+	options.add_experimental_option('excludeSwitches', ['enable-logging'])
+ 
+	driver:WebDriver = webdriver.Chrome(options=options)
 	driver.maximize_window()
+ 
 	initial_time = time()
 	pessoas = []
 	
@@ -110,7 +114,7 @@ def scrape(df, name):
 
 		pessoas.append(pessoa)
 
-	print(f"Tempo de execução ({name}):", f'{time() - initial_time:.2f} segundos')
+	print(f"\nA planilha '{name}' foi extraída com sucesso! Tempo de execução:", f'{time() - initial_time:.2f} segundos')
 
 	driver.quit()
 	
