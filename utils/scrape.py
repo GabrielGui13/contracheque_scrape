@@ -1,4 +1,5 @@
 from selenium import webdriver
+import numpy as np
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.remote.webdriver import WebDriver
@@ -16,6 +17,32 @@ def scrape(df, name):
  
   initial_time = time()
   pessoas = []
+  van_codes_indexes = []
+  
+  pessoa_van_template = {
+    "nome": "",
+    "cpf": "",
+    "matricula": "",
+    "vinculo": "",
+    "numpens": "",
+    "margem_consignavel": "",	
+    "total_vantagens": "",
+    "liquido": "",
+    "periodo": "",
+    "vanqt": 0,
+  }
+  
+  pessoa_des_template = {
+    "CODDES 1": "",
+    "DISCRIMINAÇÃO DES 1": "",
+    "VALORDES 1": "",
+    "CODDES 2": "",
+    "DISCRIMINAÇÃO DES 2": "",
+    "VALORDES 2": "",
+    "CODDES 3": "",
+    "DISCRIMINAÇÃO DES 3": "",
+    "VALORDES 3": "",
+  }
   
   for i in range(len(df)):
     driver.get('http://servicos.searh.rn.gov.br/searh/copag/contra_cheque_pensionistas.asp')
@@ -52,7 +79,6 @@ def scrape(df, name):
     comp_disc_rows = driver.find_elements(By.XPATH, '/html/body/table[3]/tbody/tr')
     
     pessoa = {
-      "vanqt": 0,
       "nome": str(comp_nome),
       "cpf": (comp_cpf),
       "matricula": (comp_matricula),
@@ -62,6 +88,7 @@ def scrape(df, name):
       "total_vantagens": str(comp_total_vantagens),
       "liquido": str(comp_liquido),
       "periodo": str(comp_periodo),
+      "vanqt": 0,
     }
     
     pessoa_van = {
@@ -111,26 +138,35 @@ def scrape(df, name):
         pessoa_des["CODDES 3"] = codigo
         pessoa_des["DISCRIMINAÇÃO DES 3"] = discriminacao
         pessoa_des["VALORDES 3"] = valordes
-
+    
     for v in range(pessoa["vanqt"]):
-      pessoa[f"CODVAN {v + 1}"] = pessoa_van["codvan"][v]
-      pessoa[f"DISCRIMINAÇÃO VAN {v + 1}"] = pessoa_van["discriminacaovan"][v]
-      pessoa[f"VALORVAN {v + 1}"] = pessoa_van["valorvan"][v]
+      findable_aux_van_codes_indexes = np.array(van_codes_indexes)
+      van_code_index = np.where(findable_aux_van_codes_indexes == pessoa_van["codvan"][v])[0]
+      
+      if len(van_code_index) != 0:        
+        pessoa[f"CODVAN {van_code_index[0] + 1}"] = pessoa_van["codvan"][v]
+        pessoa[f"DISCRIMINAÇÃO VAN {van_code_index[0] + 1}"] = pessoa_van["discriminacaovan"][v]
+        pessoa[f"VALORVAN {van_code_index[0] + 1}"] = pessoa_van["valorvan"][v]
+      else:
+        van_codes_indexes.append(pessoa_van["codvan"][v])
+        new_van_code_index = len(van_codes_indexes)
+        
+        pessoa[f"CODVAN {new_van_code_index}"] = pessoa_van["codvan"][v]
+        pessoa[f"DISCRIMINAÇÃO VAN {new_van_code_index}"] = pessoa_van["discriminacaovan"][v]
+        pessoa[f"VALORVAN {new_van_code_index}"] = pessoa_van["valorvan"][v]
+        
+        pessoa_van_template[f"CODVAN {new_van_code_index}"] = ""
+        pessoa_van_template[f"DISCRIMINAÇÃO VAN {new_van_code_index}"] = ""
+        pessoa_van_template[f"VALORVAN {new_van_code_index}"] = ""
    
     pessoa.update(pessoa_des)
-  
-    # print(pessoa)
-
     pessoas.append(pessoa)
-    # pessoas_des.append(pessoa_des)
-
-  
-  
-  sort_excel_vanqt_key = cmp_to_key(sortExcelVanqt)
-  pessoas.sort(key=sort_excel_vanqt_key)
   
   print(f"\nA planilha '{name}' foi extraída com sucesso! Tempo de execução:", f'{time() - initial_time:.2f} segundos')
 
   driver.quit()
+
+  pessoa_van_template.update(pessoa_des_template)
+  pessoas.insert(0, pessoa_van_template)
   
   return pessoas
