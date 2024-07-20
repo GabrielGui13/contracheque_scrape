@@ -1,0 +1,1 @@
+* Run `python -m PyInstaller --onefile --console main.py --name excelscraper` to generate an executable script.
