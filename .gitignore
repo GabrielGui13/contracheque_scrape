@@ -3,4 +3,4 @@
 
 *.spec
 
-/excelscraper/*.exe
+*.exe
