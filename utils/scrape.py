@@ -5,10 +5,12 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from time import time
-from utils.functions import convertMonth, sortExcelVanqt
+from utils.functions import convert_month, convert_seconds_to_formatted_time
 from functools import cmp_to_key
 
 def scrape(df, name):	
+  print(f"Iniciando extração da planilha: {name}\n")
+  
   options = webdriver.ChromeOptions()
   options.add_experimental_option('excludeSwitches', ['enable-logging'])
  
@@ -17,6 +19,7 @@ def scrape(df, name):
  
   initial_time = time()
   pessoas = []
+  pessoas_sem_registro = []
   van_codes_indexes = []
   
   pessoa_van_template = {
@@ -56,15 +59,40 @@ def scrape(df, name):
     box_mes.click()
     box_ano = driver.find_element(By.ID, 'ano')
     
-    box_matricula.send_keys(str(df.matricula[i]))
+    box_matricula.send_keys(str(df['matricula'][i]))
     box_vinculo.send_keys(str(df['vinculo'][i]))
     box_cpf.send_keys(str(df['cpf'][i]))
     box_numpens.send_keys(str(df['numpens'][i]))
-    box_mes_choice = driver.find_element(By.XPATH, f"/html/body/div[1]/div[2]/div/div/div[2]/form/div[5]/select/option[{convertMonth(df['mes'][i])}]")
+    box_mes_choice = driver.find_element(By.XPATH, f"/html/body/div[1]/div[2]/div/div/div[2]/form/div[5]/select/option[{convert_month(df['mes'][i])}]")
     box_mes_choice.click()
     box_ano.send_keys(str(df['ano'][i]))
     
     box_form.submit()
+    
+    current_url = driver.current_url
+    
+    if current_url.find('contrachk') == -1:
+      motivo = ''
+      if len(current_url.split('&')) == 1:
+        motivo = 'Usuário não permite a visualização de seu contracheque.'
+      elif len(current_url.split('&')) == 5:
+        motivo = 'Registro não encontrado.'
+      else:
+        motivo = 'Motivo não encontrado ou desconhecido.'
+        
+      pessoas_sem_registro.append({
+        "Matrícula(com o dígito)": df['matricula'][i],
+        "Vínculo": df['vinculo'][i],
+        "CPF(do(a) Pensionista)": df['cpf'][i],
+        "N.º Pensionista": df['numpens'][i],
+        "Mês": df['mes'][i],
+        "ano": df['ano'][i],
+        "Motivo": motivo,
+      })
+      
+      print(f"{i + 1}: CPF => {df['cpf'][i]} e Matrícula => {df['matricula'][i]} não encontrado(s). ({motivo})")
+      
+      continue
     
     comp_nome:WebElement = driver.find_element(By.XPATH, '/html/body/table[2]/tbody/tr[1]/td[1]/font/b/font').text
     comp_cpf = driver.find_element(By.XPATH, '/html/body/table[2]/tbody/tr[2]/td[3]/font[2]/font').text
@@ -108,6 +136,8 @@ def scrape(df, name):
       "DISCRIMINAÇÃO DES 3": "",
       "VALORDES 3": "",
     }
+    
+    print(f"{i + 1}: {pessoa['nome']} ({pessoa['cpf']}) inserido.")
     
     for j in range(1, len(comp_disc_rows) - 1):
       codigo_xpath = "/html/body/table[3]/tbody/tr[" + str(j + 1) + "]/td[1]/font/b/font/font"
@@ -162,11 +192,11 @@ def scrape(df, name):
     pessoa.update(pessoa_des)
     pessoas.append(pessoa)
   
-  print(f"\nA planilha '{name}' foi extraída com sucesso! Tempo de execução:", f'{time() - initial_time:.2f} segundos')
+  print(f"\nA planilha '{name}' foi extraída com sucesso! Tempo de execução:", f'{convert_seconds_to_formatted_time(time() - initial_time)}\n')
 
   driver.quit()
 
   pessoa_van_template.update(pessoa_des_template)
   pessoas.insert(0, pessoa_van_template)
   
-  return pessoas
+  return [pessoas, pessoas_sem_registro]

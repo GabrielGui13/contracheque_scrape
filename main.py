@@ -1,6 +1,6 @@
 from utils.scrape import scrape
-from utils.excel import readExcel, findExcel, writeExcel
-from utils.functions import detectAllDuplicateExcel, detectDuplicateExcel
+from utils.excel import read_excel, find_excel, write_excel, write_not_found_excel_clone
+from utils.functions import detect_all_duplicate_excel, detect_duplicate_excel
 from time import sleep
 
 def main():
@@ -11,7 +11,7 @@ def main():
   all_excel = []
   
   while(True):
-    try_find_excel = findExcel("entrada")
+    try_find_excel = find_excel("entrada")
     
     if len(try_find_excel) == 0:
       print("Nenhuma planilha encontrada!\n")
@@ -27,7 +27,7 @@ def main():
         choice = input()
         
         if choice.lower() == 's':
-          found_duplicates = detectAllDuplicateExcel(try_find_excel)
+          found_duplicates = detect_all_duplicate_excel(try_find_excel)
      
           if len(found_duplicates) != 0:
             print("\nOps, alguma(s) planilha(s) de entrada encontrada(s) já extraída(s) ou com o(s) mesmo(s) nome(s):")
@@ -61,7 +61,7 @@ def main():
               print("Número da planilha inválido! Tente novamente.\n")
               continue
             
-            found_duplicate = detectDuplicateExcel(try_find_excel[int(choice) - 1])
+            found_duplicate = detect_duplicate_excel(try_find_excel[int(choice) - 1])
       
             if found_duplicate["detected"] == True:
               print(f"\nOps, a planilha '{found_duplicate['in']}' foi encontrada já extraída ou com o mesmo nome:")
@@ -107,18 +107,17 @@ def main():
     
   # try:
   for i in range(len(all_excel)):
-    df = readExcel(all_excel[i])
+    df = read_excel(all_excel[i])
     scraped_data = scrape(df, all_excel[i])
-    excel_done = writeExcel(scraped_data, all_excel[i])
-    print(f"Você pode encontrá-la em '{excel_done}'")
+    excel_done = write_excel(scraped_data[0], all_excel[i])
+    excel_not_done = write_not_found_excel_clone(scraped_data[1], all_excel[i])
+    print(f"Você pode encontrá-la em '{excel_done}'\n")
+    
+    if len(excel_not_done) > 0:
+      print(f"Para os casos não encontrados, você pode encontrá-los em '{excel_not_done}'")
+    
   sleep(2)
   print("\nExtração finalizada com sucesso! Obrigado por utilizar nosso sistema!\n")
-  # except Exception as error:
-  #   print(f"\nErro: {error}")
-  #   print("Ocorreu algum erro! Por favor tente novamente.")
-  # finally:
-  #   print("Aperte qualquer botão para encerrar o processo.", end=" ")
-  #   input()
 
 try:
   main()

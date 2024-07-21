@@ -44,9 +44,9 @@ Certifique-se de que os nomes das colunas estejam corretos, caso contrário, o s
    pip install pandas selenium
    ```
 3. E ao final gere o executável com:
-```sh
-python -m PyInstaller --onefile --console main.py --name excelscraper
-```
+	```sh
+	python -m PyInstaller --onefile --console main.py --name excelscraper
+	```
 
 ## Suporte
 

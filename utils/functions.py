@@ -1,7 +1,7 @@
 from os import listdir
-from utils.excel import findExcel
+from utils.excel import find_excel
 
-def convertMonth(month):
+def convert_month(month):
   monthDictionary = {
     "janeiro": 1,
     "fevereiro": 2,
@@ -19,8 +19,8 @@ def convertMonth(month):
   
   return monthDictionary[month]
 
-def detectAllDuplicateExcel(entry_excel):
-  output_excel = findExcel("saida")
+def detect_all_duplicate_excel(entry_excel):
+  output_excel = find_excel("saida")
   detected_excel = []
  
   for i in range(len(entry_excel)):
@@ -34,7 +34,7 @@ def detectAllDuplicateExcel(entry_excel):
       
   return detected_excel
 
-def detectDuplicateExcel(entry_excel):
+def detect_duplicate_excel(entry_excel):
   output_excel = listdir('./planilhas/saida')
   
   for i in range(len(output_excel)):
@@ -50,9 +50,10 @@ def detectDuplicateExcel(entry_excel):
     "in": entry_excel,
     "out": None,
   }
- 
-def sortExcelVanqt(v1, v2):
-  if v1['vanqt'] <= v2['vanqt']:
-    return 1
-  else:
-    return -1
+
+def convert_seconds_to_formatted_time(sec):
+  hours = sec // 3600
+  minutes = (sec % 3600) // 60
+  seconds = (sec % 3600) % 60
+  
+  return f"{int(hours)}h {int(minutes)}m {int(seconds)}s"

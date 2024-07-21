@@ -2,17 +2,17 @@ import pandas as pd
 from os import listdir, chdir
 from datetime import datetime, UTC
 
-def findExcel(io):
+def find_excel(io):
   files = listdir(f"./planilhas/{io}")
   filtered_files = []
   
   for i in files:
-    if i.endswith('.xlsx'):
+    if i.endswith('.xlsx') and not i.startswith('~'):
       filtered_files.append(i)  
   
   return filtered_files
 
-def readExcel(name):
+def read_excel(name):
   df = pd.read_excel(f'./planilhas/entrada/{name}')
   
   df.rename(columns={'Matrícula(com o dígito)': 'matricula'}, inplace=True)
@@ -24,7 +24,7 @@ def readExcel(name):
   
   return df
 
-def writeExcel(dictionary, name):
+def write_excel(dictionary, name):
   df = pd.DataFrame(dictionary)
   
   df.rename(columns={'nome': 'NOME'}, inplace=True)
@@ -44,7 +44,18 @@ def writeExcel(dictionary, name):
   
   time_now = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
 
-  excel_name = f'./planilhas/saida/{time_now}_format_{name}'
+  excel_name = f'./planilhas/saida/{time_now}_finalizado_{name}'
+    
+  df.to_excel(excel_name, index=False)
+  
+  return excel_name
+
+def write_not_found_excel_clone(dictionary, name):
+  df = pd.DataFrame(dictionary)
+  
+  time_now = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+
+  excel_name = f'./planilhas/saida/{time_now}_erros_{name}'
     
   df.to_excel(excel_name, index=False)
   
