@@ -16,6 +16,7 @@ O projeto está estruturado da seguinte maneira:
 1. Coloque as planilhas a serem processadas na pasta **planilhas/entrada**.
 2. Execute o arquivo .exe.
 3. As planilhas com os dados extraídos serão geradas na pasta **planilhas/saida**.
+4. As planilhas com os dados defeituosos serão geradas na pasta **planilhas/saida**.
 
 ## Formato das Planilhas de Entrada
 
@@ -45,7 +46,7 @@ Certifique-se de que os nomes das colunas estejam corretos, caso contrário, o s
    ```
 3. E ao final gere o executável com:
 	```sh
-	python -m PyInstaller --onefile --console main.py --name excelscraper
+	python -m PyInstaller --onefile --console --distpath ./excelscraper main.py --name excelscraper
 	```
 
 ## Suporte
