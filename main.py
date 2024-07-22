@@ -1,7 +1,8 @@
 from utils.scrape import scrape
 from utils.excel import read_excel, find_excel, write_excel, write_not_found_excel_clone
-from utils.functions import detect_all_duplicate_excel, detect_duplicate_excel
+from utils.functions import detect_all_duplicate_excel, detect_duplicate_excel, alert_box
 from time import sleep
+import pyautogui
 
 def main():
   print("Olá! Bem-vindo ao sistema de automação de extração das planilhas de consulta de contracheque de pensionistas!\n")
@@ -119,12 +120,14 @@ def main():
     
   sleep(2)
   print("\nExtração finalizada com sucesso! Obrigado por utilizar nosso sistema!\n")
+  alert_box("Automatizador de processos", "Extração finalizada com sucesso! Obrigado por utilizar nosso sistema!", "Finish")
 
 try:
   main()
 except Exception as error:
   print("\nOcorreu algum erro! Por favor tente novamente.")
   print(f"Erro: {error}")
+  alert_box("Erro", f"Ocorreu algum erro! Por favor tente novamente.\n\nErro: {error}", "OK")
 finally:
   print("\nAperte qualquer botão para encerrar o processo.", end=" ")
   input()

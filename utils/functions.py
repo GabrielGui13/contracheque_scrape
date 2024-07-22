@@ -1,5 +1,6 @@
 from os import listdir
 from utils.excel import find_excel
+import pyautogui
 
 def convert_month(month):
   monthDictionary = {
@@ -57,3 +58,6 @@ def convert_seconds_to_formatted_time(sec):
   seconds = (sec % 3600) % 60
   
   return f"{int(hours)}h {int(minutes)}m {int(seconds)}s"
+
+def alert_box(title, message, button):
+  pyautogui.alert(text=message, title=title, button=button)
