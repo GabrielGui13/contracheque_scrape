@@ -69,10 +69,11 @@ def scrape(df, name):
     
     box_form.submit()
     
+    comp_disc_rows = driver.find_elements(By.XPATH, '/html/body/table[3]/tbody/tr')
     current_url = driver.current_url
     
+    motivo = ''
     if current_url.find('contrachk') == -1:
-      motivo = ''
       if len(current_url.split('&')) == 1:
         motivo = 'Usuário não permite a visualização de seu contracheque.'
       elif len(current_url.split('&')) == 5:
@@ -90,7 +91,23 @@ def scrape(df, name):
         "Motivo": motivo,
       })
       
-      print(f"{i + 1}: CPF => {df['cpf'][i]} e Matrícula => {df['matricula'][i]} não encontrado(s). ({motivo})")
+      print(f"{i + 1}: CPF => {df['cpf'][i]} e Matrícula => {df['matricula'][i]} não extraído(s). ({motivo})")
+      
+      continue
+    elif len(comp_disc_rows) <= 2:
+      motivo = 'Contracheque vazio.'
+      
+      pessoas_sem_registro.append({
+        "Matrícula(com o dígito)": df['matricula'][i],
+        "Vínculo": df['vinculo'][i],
+        "CPF(do(a) Pensionista)": df['cpf'][i],
+        "N.º Pensionista": df['numpens'][i],
+        "Mês": df['mes'][i],
+        "ano": df['ano'][i],
+        "Motivo": motivo,
+      })
+      
+      print(f"{i + 1}: CPF => {df['cpf'][i]} e Matrícula => {df['matricula'][i]} não extraído(s). ({motivo})")
       
       continue
     
@@ -103,8 +120,6 @@ def scrape(df, name):
     comp_total_vantagens = driver.find_element(By.XPATH, '/html/body/table[4]/tbody/tr/td[2]/div/font/font[2]/b').text
     comp_liquido = driver.find_element(By.XPATH, '/html/body/table[4]/tbody/tr/td[4]/p/font/font[2]/b').text
     comp_periodo = driver.find_element(By.XPATH, '/html/body/table[1]/tbody/tr[2]/td[3]/p/font/font[2]').text
-    
-    comp_disc_rows = driver.find_elements(By.XPATH, '/html/body/table[3]/tbody/tr')
     
     pessoa = {
       "nome": str(comp_nome),
@@ -137,14 +152,11 @@ def scrape(df, name):
       "VALORDES 3": "",
     }
     
-    print(f"{i + 1}: {pessoa['nome']} ({pessoa['cpf']}) inserido.")
-    
     for j in range(1, len(comp_disc_rows) - 1):
       codigo_xpath = "/html/body/table[3]/tbody/tr[" + str(j + 1) + "]/td[1]/font/b/font/font"
       discriminacao_xpath = "/html/body/table[3]/tbody/tr[" + str(j + 1) + "]/td[2]/font/b/font/font"
       vantagens_xpath = "/html/body/table[3]/tbody/tr[" + str(j + 1) + "]/td[3]/font/b/font/font"
       descontos_xpath = "/html/body/table[3]/tbody/tr[" + str(j + 1) + "]/td[4]/font/b/font/b/font/font"
-      # /html/body/table[3]/tbody/tr[4]/td[4]/font/b/font/b/font/font
 
       codigo = driver.find_element(By.XPATH, codigo_xpath).text
       discriminacao = driver.find_element(By.XPATH, discriminacao_xpath).text
@@ -191,6 +203,8 @@ def scrape(df, name):
    
     pessoa.update(pessoa_des)
     pessoas.append(pessoa)
+    
+    print(f"{i + 1}: {pessoa['nome']} ({pessoa['cpf']}) extraído.")
   
   print(f"\nA planilha '{name}' foi extraída com sucesso! Tempo de execução:", f'{convert_seconds_to_formatted_time(time() - initial_time)}\n')
 
