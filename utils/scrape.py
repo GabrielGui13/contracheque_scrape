@@ -108,13 +108,13 @@ def scrape(df, name):
     
     pessoa = {
       "nome": str(comp_nome),
-      "cpf": (comp_cpf),
+      "cpf": int(comp_cpf),
       "matricula": (comp_matricula),
       "vinculo": int(comp_vinculo),
       "numpens": int(comp_numpens),
-      "margem_consignavel": str(comp_margem_consignavel),	
-      "total_vantagens": str(comp_total_vantagens),
-      "liquido": str(comp_liquido),
+      "margem_consignavel": str(comp_margem_consignavel).replace('R$', '').replace('.', '').replace(',', '.').strip(),	
+      "total_vantagens": str(comp_total_vantagens).replace('R$', '').replace('.', '').replace(',', '.').strip(),
+      "liquido": str(comp_liquido).replace('R$', '').replace('.', '').replace(',', '.').strip(),
       "periodo": str(comp_periodo),
       "vanqt": 0,
     }
@@ -152,22 +152,22 @@ def scrape(df, name):
       valordes = driver.find_element(By.XPATH, descontos_xpath).text
    
       if valorvan != ' ':      
-        pessoa_van["codvan"].append(codigo)
+        pessoa_van["codvan"].append(int(codigo))
         pessoa_van["discriminacaovan"].append(discriminacao)
-        pessoa_van["valorvan"].append(valorvan)
+        pessoa_van["valorvan"].append(str(valorvan).replace('R$', '').replace('.', '').replace(',', '.').strip())
         pessoa["vanqt"] = pessoa["vanqt"] + 1
       elif int(codigo) == 913:
-        pessoa_des["CODDES 1"] = codigo
+        pessoa_des["CODDES 1"] = int(codigo)
         pessoa_des["DISCRIMINAÇÃO DES 1"] = discriminacao
-        pessoa_des["VALORDES 1"] = valordes
+        pessoa_des["VALORDES 1"] = str(valordes).replace('R$', '').replace('.', '').replace(',', '.').strip()
       elif int(codigo) == 534:
-        pessoa_des["CODDES 2"] = codigo
+        pessoa_des["CODDES 2"] = int(codigo)
         pessoa_des["DISCRIMINAÇÃO DES 2"] = discriminacao
-        pessoa_des["VALORDES 2"] = valordes
+        pessoa_des["VALORDES 2"] = str(valordes).replace('R$', '').replace('.', '').replace(',', '.').strip()
       elif int(codigo) == 508:
-        pessoa_des["CODDES 3"] = codigo
+        pessoa_des["CODDES 3"] = int(codigo)
         pessoa_des["DISCRIMINAÇÃO DES 3"] = discriminacao
-        pessoa_des["VALORDES 3"] = valordes
+        pessoa_des["VALORDES 3"] = str(valordes).replace('R$', '').replace('.', '').replace(',', '.').strip()
     
     for v in range(pessoa["vanqt"]):
       findable_aux_van_codes_indexes = np.array(van_codes_indexes)
@@ -176,14 +176,14 @@ def scrape(df, name):
       if len(van_code_index) != 0:        
         pessoa[f"CODVAN {van_code_index[0] + 1}"] = pessoa_van["codvan"][v]
         pessoa[f"DISCRIMINAÇÃO VAN {van_code_index[0] + 1}"] = pessoa_van["discriminacaovan"][v]
-        pessoa[f"VALORVAN {van_code_index[0] + 1}"] = pessoa_van["valorvan"][v]
+        pessoa[f"VALORVAN {van_code_index[0] + 1}"] = str(pessoa_van["valorvan"][v])
       else:
         van_codes_indexes.append(pessoa_van["codvan"][v])
         new_van_code_index = len(van_codes_indexes)
         
         pessoa[f"CODVAN {new_van_code_index}"] = pessoa_van["codvan"][v]
         pessoa[f"DISCRIMINAÇÃO VAN {new_van_code_index}"] = pessoa_van["discriminacaovan"][v]
-        pessoa[f"VALORVAN {new_van_code_index}"] = pessoa_van["valorvan"][v]
+        pessoa[f"VALORVAN {new_van_code_index}"] = str(pessoa_van["valorvan"][v])
         
         pessoa_van_template[f"CODVAN {new_van_code_index}"] = ""
         pessoa_van_template[f"DISCRIMINAÇÃO VAN {new_van_code_index}"] = ""

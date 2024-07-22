@@ -110,10 +110,11 @@ def main():
     df = read_excel(all_excel[i])
     scraped_data = scrape(df, all_excel[i])
     excel_done = write_excel(scraped_data[0], all_excel[i])
-    excel_not_done = write_not_found_excel_clone(scraped_data[1], all_excel[i])
     print(f"Você pode encontrá-la em '{excel_done}'\n")
     
-    if len(excel_not_done) > 0:
+    excel_not_done = write_not_found_excel_clone(scraped_data[1], all_excel[i])
+    
+    if excel_not_done.strip() != '':
       print(f"Para os casos não encontrados, você pode encontrá-los em '{excel_not_done}'")
     
   sleep(2)
@@ -121,10 +122,9 @@ def main():
 
 try:
   main()
-  input()
 except Exception as error:
-  print(f"\nErro: {error}")
-  print("Ocorreu algum erro! Por favor tente novamente.")
+  print("\nOcorreu algum erro! Por favor tente novamente.")
+  print(f"Erro: {error}")
 finally:
   print("\nAperte qualquer botão para encerrar o processo.", end=" ")
   input()

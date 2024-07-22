@@ -1,5 +1,5 @@
 import pandas as pd
-from os import listdir, chdir
+from os import listdir
 from datetime import datetime, UTC
 
 def find_excel(io):
@@ -27,6 +27,10 @@ def read_excel(name):
 def write_excel(dictionary, name):
   df = pd.DataFrame(dictionary)
   
+  # df["margem_consignavel"] = pd.to_numeric(df["margem_consignavel"])
+  # df["total_vantagens"] = pd.to_numeric(df["total_vantagens"])
+  # df["liquido"] = pd.to_numeric(df["liquido"])
+  
   df.rename(columns={'nome': 'NOME'}, inplace=True)
   df.rename(columns={'cpf': 'CPF'}, inplace=True)
   df.rename(columns={'matricula': 'MATRÍCULA'}, inplace=True)
@@ -42,6 +46,14 @@ def write_excel(dictionary, name):
   df.drop('vanqt', axis=1, inplace=True)
   df.drop(index=df.index[0], axis=0, inplace=True)
   
+  # # Iterate over each column in the dataframe
+  # for column in df.columns:
+  #     if df[column].dtype == 'string':  # Only process columns with object/string type
+  #         # Check if the string begins with $  should be expanded ot other currencies as well but $ for now
+  #         if df[column].str.startswith('R$').any():
+  #             # Remove $ and commas from the values and convert to float with precision of 2
+  #             df[column] = pd.to_numeric(df[column].str.replace('$', '').str.replace(',', '').str.replace(' ', ''))
+  
   time_now = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
 
   excel_name = f'./planilhas/saida/{time_now}_finalizado_{name}'
@@ -51,12 +63,15 @@ def write_excel(dictionary, name):
   return excel_name
 
 def write_not_found_excel_clone(dictionary, name):
-  df = pd.DataFrame(dictionary)
-  
-  time_now = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
-
-  excel_name = f'./planilhas/saida/{time_now}_erros_{name}'
+  if len(dictionary) > 0:
+    df = pd.DataFrame(dictionary)
     
-  df.to_excel(excel_name, index=False)
+    time_now = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+
+    excel_name = f'./planilhas/saida/{time_now}_erros_{name}'
+      
+    df.to_excel(excel_name, index=False)
+    
+    return excel_name
   
-  return excel_name
+  return ''
