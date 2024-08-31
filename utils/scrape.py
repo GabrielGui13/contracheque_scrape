@@ -8,7 +8,7 @@ from time import time
 from utils.functions import convert_month, convert_seconds_to_formatted_time
 from functools import cmp_to_key
 
-def scrape(df, name):	
+def scrape(df, name):
   print(f"Iniciando extração da planilha: {name}\n")
   
   options = webdriver.ChromeOptions()
